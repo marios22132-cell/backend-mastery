@@ -1,0 +1,20 @@
+{
+  "name": "project-camp-overview",
+  "version": "1.0.0",
+  "description": "a backend project ",
+  "keywords": [
+    "API",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "Marios Pogiatzeas",
+  "type": "commonjs",
+  "main": "index.js",
+  "types": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "devDependencies": {
+    "prettier": "3.8.1"
+  }
+}
