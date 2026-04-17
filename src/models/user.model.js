@@ -51,7 +51,10 @@ const userSchema = new Schema({
     emailVerificationExpiry: {
         type: Date
     }
-   , timestamps: true 
+   
+},
+  {
+    timestamps: true
 })
 
 userSchema.pre("save", async function(next) {

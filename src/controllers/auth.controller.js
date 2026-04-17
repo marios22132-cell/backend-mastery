@@ -2,8 +2,8 @@ import {User} from "../models/user.model.js";
 import { ApiError } from "../utils/api-errors.js";
 import { ApiRequest } from "../utils/api-response.js";
 import { asyncHandler } from "../utils/async-Handler.js";
-import { sendEmail } from "../utils/email.js";
-i
+import { sendEmail } from "../utils/mail.js";
+
 
 const generateAccessTokkenAndRefreshToken = (userId) => {
     try{
