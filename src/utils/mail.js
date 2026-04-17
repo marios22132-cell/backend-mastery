@@ -6,7 +6,7 @@ const sendEmail = async (options) => {
         theme: "default",
         product: {
             name: "Task Management App",
-            link: process.env.FRONTEND_URL
+            link: process.env.FRONTEND_URL || "http://localhost:8000"
         }
     })
     const emailTextual = mailGen.generatePlaintext(options.mailgenContent);
@@ -47,7 +47,7 @@ const mailGen = (username, verificationUrl) => {
                 button: { 
                     color: "#22BC66",
                     text: "Verify Email",
-                    link: verificationUrl
+                    link: "verificationUrl"
                 }
     },         outro: "If you did not create an account, no further action is required."
         }

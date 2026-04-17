@@ -2,7 +2,7 @@ import {User} from "../models/user.model.js";
 import { ApiError } from "../utils/api-errors.js";
 import { ApiRequest } from "../utils/api-response.js";
 import { asyncHandler } from "../utils/async-Handler.js";
-import { sendEmail } from "../utils/mail.js";
+import { sendEmail, mailGen } from "../utils/mail.js";
 
 
 const generateAccessTokkenAndRefreshToken = (userId) => {
@@ -45,7 +45,7 @@ const user = await User.create(
     await sendEmail({
         to: user?.email,
         subject: "Email Verification",
-        mailgenContent: emailVerificationMailGen(
+        mailgenContent: mailGen(
             user.username,
             `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unhashedToken}`
         ),
@@ -54,9 +54,10 @@ const user = await User.create(
     if(!createdUser){
         throw new ApiError(500, "Error while creating user", []);
     }
-   return 
-   res.status(201).
-   json(new ApiRequest(true, "User registered successfully. Please check your email to verify your account.", createdUser));
+    
+   return res.status(201).json(
+    new ApiRequest(true, "User registered successfully...", createdUser)
+);
 })
 
 export {registerUser}
