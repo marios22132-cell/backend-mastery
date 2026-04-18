@@ -12,19 +12,19 @@ const sendEmail = async (options) => {
     const emailTextual = mailGen.generatePlaintext(options.mailgenContent);
     const emailHTML = mailGen.generate(options.mailgenContent);
     const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        secure: process.env.EMAIL_SECURE === "true",
+        host: process.env.MAILTRAP_SMTP_HOST,
+        port: process.env.MAILTRAP_SMTP_PORT,
+        secure: process.env.MAILTRAP_SMTP_SECURE === "true",
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD
+            user: process.env.MAILTRAP_SMTP_USER,
+            pass: process.env.MAILTRAP_SMTP_PASSWORD
         }
     });
 
     
     const mail = {
         from: "marios1522@hotmail.com",
-        to: options.email,
+        to: options.to,
         subject: options.subject,
         text: emailTextual,
         html: emailHTML 
@@ -47,7 +47,7 @@ const mailGen = (username, verificationUrl) => {
                 button: { 
                     color: "#22BC66",
                     text: "Verify Email",
-                    link: "verificationUrl"
+                    link: verificationUrl
                 }
     },         outro: "If you did not create an account, no further action is required."
         }
