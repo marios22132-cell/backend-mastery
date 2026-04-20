@@ -34,6 +34,29 @@ const registerUserValidator = ()=>{
         
 
 }
+
+const loginValidator = ()=>{
+    return [
+        body("email")
+        .optional()
+        .trim()
+        .isEmail()
+        .withMessage("Invalid email format"),
+        body("username")
+        .optional()
+        .trim()
+        .isLowercase()
+        .withMessage("Username must be in lowercase")
+        .isLength({min: 3, max: 30})
+        .withMessage("Username must be between 3 and 30 characters"),
+        body("password")
+        .trim()
+        .notEmpty()
+        .withMessage("Password is required")
+    ]
+}
+
+
 export{
-    registerUserValidator
+    registerUserValidator, loginValidator
 }

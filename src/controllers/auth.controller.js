@@ -60,4 +60,40 @@ const user = await User.create(
 );
 })
 
-export {registerUser}
+const login = asyncHandler(async (req, res) => {
+const {email, password, username} = req.body;
+if (!email) {
+    throw new ApiError(400, "Email or username is required", []);   
+}
+const user = await User.findOne({email});
+if (!user) {
+    throw new ApiError(404, "User not found", []);
+}
+const isPasswordValid = await user.comparePassword(password);
+if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password", []);
+}
+const {accessTokken, refreshTokken} = await generateAccessTokkenAndRefreshToken(user._id);
+const loggedInUser = await User.findById(user._id).select ("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: true
+};
+return res
+.status(200)
+.cookie("refreshToken", refreshTokken, cookieOptions)
+.cookie("accessToken", accessTokken, cookieOptions)
+.json(new ApiRequest(
+    200,
+    {user: loggedInUser, 
+    accessTokken, 
+    refreshTokken
+    },
+    "User logged in successfully"
+));
+})
+
+
+
+export {registerUser, login}
