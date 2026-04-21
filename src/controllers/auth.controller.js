@@ -5,14 +5,14 @@ import { asyncHandler } from "../utils/async-Handler.js";
 import { sendEmail, mailGen } from "../utils/mail.js";
 
 
-const generateAccessTokkenAndRefreshToken = (userId) => {
+const generateAccessTokkenAndRefreshToken = async (userId) => {
     try{
-        const user = User.findById(userId);
+        const user = await User.findById(userId);
         const accessTokken =user.generateJWT();
         const refreshTokken = user.generateRefreshToken();
 
         user.refreshToken = refreshTokken;
-        user.save({validateBeforeSave: false});
+        await user.save({validateBeforeSave: false});
 
         return {accessTokken, refreshTokken};
     }catch(error){

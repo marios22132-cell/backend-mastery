@@ -8,7 +8,11 @@ const validateRequest = (req, res, next) => {
     }
     const extractedErrors = [];
     errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
-    throw new ApiError(422, "Validation failed", extractedErrors);
+   return res.status(422).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array()
+    });
 }
 
 export  {validateRequest};

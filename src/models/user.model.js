@@ -58,7 +58,7 @@ const userSchema = new Schema({
 })
 
 userSchema.pre("save", async function(next) {
-    if (!this.isModified("password")) ;
+    if (!this.isModified("password")) return ;
     
     this.password = await bcrypt.hash(this.password, 10); // Το 10 είναι το "cost factor"
    
