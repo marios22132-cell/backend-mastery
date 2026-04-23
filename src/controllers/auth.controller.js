@@ -94,6 +94,27 @@ return res
 ));
 })
 
+const logout = asyncHandler(async (req, res) => {
+await User.findByIdAndUpdate(req.user._id, 
+    {
+        refreshToken: ""
+
+    }, 
+    {
+        new: true
+    });
+    const options = {
+        httpOnly: true,
+        secure: true,
+        
+    }
+    return res
+    .status(200)
+    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", options)
+    .json(new ApiRequest(200, null, "User logged out successfully"));
+
+})
 
 
-export {registerUser, login}
+export {registerUser, login, logout}
