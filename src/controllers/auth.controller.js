@@ -219,5 +219,84 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
+const forgotPasswordRequest = asyncHandler(async (req, res)=>{
+    const {email} = req.body
 
-export {registerUser, login, logout, getCurrentUser, verifyEmail, resendEmailVerification, refreshAccessToken};
+    const user = await User.findOne({email});
+    if (!user) {
+        throw new ApiError(404, "User not found",);
+    }
+    const {unhashedToken, hashedToken, expiry} = user.generateTemporaryToken();
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpiry = expiry;
+    await user.save({validateBeforeSave: false});
+
+    await sendEmail({
+        email: user?.email,
+        subject: "Password Reset",
+        mailgenContent: mailGen(
+            user.username,
+            `${process.env.FORGOT_PAASSWORD_URL}/${unhashedToken}`
+        ),
+    
+})
+return res
+.status(200)
+.json(new ApiRequest(200, null, "Password reset email sent successfully"));
+})
+
+const resetPassword = asyncHandler(async (req, res) => {
+const {resetToken} = req.params;
+const {newPassword} = req.body;
+
+let hashedToken = crypto
+.createHash("sha256")
+.update(resetToken)
+.digest("hex");
+
+const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpiry: {$gt: Date.now()}
+
+});
+if (!user) {
+    throw new ApiError(489, "Invalid reset token",);
+}
+user.passwordResetToken = undefined;
+user.passwordResetExpiry = undefined;
+user.password = newPassword;
+await user.save({validateBeforeSave: false});
+
+return res
+.status(200)
+.json(new ApiRequest(200, null, "Password reset successfully"));    
+})
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const {currentPassword, newPassword} = req.body;
+
+    const isPasswordIsValid = await User.isPasswordIsValid(oldPassword);
+if (!isPasswordIsValid) {
+    throw new ApiError(401, "Current password is incorrect",);
+}
+user.password = newPassword;
+await user.save({validateBeforeSave: false});
+
+return res
+.status(200)
+.json(new ApiRequest(200, null, "Password changed successfully"));
+})
+
+
+export {
+    registerUser,
+    login,
+    logout,
+    getCurrentUser,
+    verifyEmail,
+    resendEmailVerification,
+    refreshAccessToken,
+    forgotPasswordRequest,
+    resetPassword,
+    changeCurrentPassword  };
