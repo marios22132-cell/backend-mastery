@@ -3,6 +3,7 @@ import {login, registerUser, logout, verifyEmail, refreshAccessToken} from "../c
 import {validateRequest} from "../middlewares/validator.middlewares.js";
 import {registerUserValidator, loginValidator} from "../validators/index.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+
 const router = Router();
 //unsecured
 router.post("/register",registerUserValidator(), validateRequest,registerUser);
