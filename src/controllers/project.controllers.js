@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/async-Handler.js";
 import mongoose from "mongoose";
 import { ProjectMember } from "../models/projectMember.model.js";
 import { UserRolesEnum } from "../utils/constants.js";
-}
+
 
 const getProjects = asyncHandler(async (req, res) => {
     //test
@@ -21,7 +21,19 @@ const deleteProject = asyncHandler(async (req, res) => {
 });
 
 const updateProject = asyncHandler(async (req, res) => {
-    //test
+    const {name, description} = req.body;
+    const projectId = req.params.projectId;
+
+    const project = await Project.findById(projectId,{
+        name,
+        description
+    },{new: true});
+    if(!project){
+        throw new ApiError(404, "Project not found");
+    }
+    return res
+    .status(200)
+    .json(new ApiRequest(200, project, "Project updated successfully"));
 });
 
 const getProjectMembers = asyncHandler(async (req, res) => {
@@ -60,6 +72,4 @@ export {
     getProjectMembers,
     deleteMemberFromProject,
     createProject
-
-
 }
