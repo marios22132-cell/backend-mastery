@@ -6,14 +6,49 @@ import mongoose from "mongoose";
 import { ProjectMember } from "../models/projectMember.model.js";
 import { UserRolesEnum } from "../utils/constants.js";
 import { pipeline } from "nodemailer/lib/xoauth2/index.js";
+import { User } from "../models/user.model.js";
 
 
-const getProjects = asyncHandler(async (req, res) => {
-    //test
+const getProjectsID = asyncHandler(async (req, res) => {
+    const {ProjectId} = req.params
+    const project = await Project.findById(ProjectId)
+    if (!project){
+        throw new ApiError(404, "Project not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiRequest(200, project, "Project has been fetched successfully"))
+    
+
 });
 
 const addMemberToProject = asyncHandler(async (req, res) => {
-    //test
+    const {email, role} = req.body;
+    const projectId = req.params;
+
+    const user = await User.FindOne({email});
+    if (!user){
+        throw new ApiError(404, "User not found");
+    }
+
+    await ProjectMember.findByIdAndUpdate({
+        user: new mongoose.Types.ObjectId(user._id),
+        project: new mongoose.Type.ObjectId(projectId)
+    },
+    {
+        user: new mongoose.Types.ObjectId(user._id),
+        project: new mongoose.Type.ObjectId(projectId),
+        role: role || UserRolesEnum.MEMBER
+    },
+    {
+        new: true,
+        upsert: true
+    }
+    )
+return res
+.status(200)
+.json(new ApiRequest(200, null, "Member added to project successfully"))
+
 });
 
 const deleteProject = asyncHandler(async (req, res) => {
@@ -97,7 +132,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 });
 
 const deleteMemberFromProject = asyncHandler(async (req, res) => {
- //tesst 
+ //test
 });
 
 const createProject = asyncHandler(async (req, res) => {
@@ -120,7 +155,7 @@ return res
 
 
 export {
-    getProjects,
+    getProjectsID,
     addMemberToProject,
     deleteProject,
     updateProject,
